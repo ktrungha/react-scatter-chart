@@ -131,6 +131,7 @@ function SelectionRectangle({ pos }) {
     <div
       draggable={false}
       style={{
+        userSelect: 'none',
         position: 'absolute',
         top: Math.min(rectangleY1, rectangleY2),
         left: Math.min(rectangleX1, rectangleX2),
