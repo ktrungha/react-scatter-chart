@@ -1,12 +1,8 @@
 import React from 'react';
-import ScatterChart from './components/ScatterChart';
 import styled from 'styled-components';
+import ScatterChart from './components/ScatterChart';
 
-const data = [
-  { x: 1, y: 1, key: 1 },
-  { x: 2, y: 2, key: 2 },
-  { x: 3, y: 5, key: 3 },
-];
+const colors = ['#ff5722', '#2196f3', '#4caf50', '#673ab7'];
 
 const Input = styled.input`
   width: 100px;
@@ -24,7 +20,6 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      key: 0,
       minX: 0,
       minY: 0,
       maxX: 100,
@@ -48,7 +43,6 @@ class App extends React.Component {
       maxY,
       count,
       selectedKeys,
-      key,
       data,
     } = this.state;
     return (
@@ -78,63 +72,63 @@ class App extends React.Component {
               Generate data
             </div>
             <Field>
-              Number of points:{' '}
+              Number of points:
+              {' '}
               <Input
                 value={count}
                 type="number"
-                onChange={event => {
-                  this.setState({
-                    count: Number.parseFloat(event.target.value),
-                  });
-                }}
+                onChange={event => this.setState({
+                  count: Number.parseFloat(event.target.value),
+                })
+                }
               />
             </Field>
             <Field>
-              min X:{' '}
+              min X:
+              {' '}
               <Input
                 value={minX}
                 type="number"
-                onChange={event => {
-                  this.setState({
-                    minX: Number.parseFloat(event.target.value),
-                  });
-                }}
+                onChange={event => this.setState({
+                  minX: Number.parseFloat(event.target.value),
+                })
+                }
               />
             </Field>
             <Field>
-              max X:{' '}
+              max X:
+              {' '}
               <Input
                 value={maxX}
                 type="number"
-                onChange={event => {
-                  this.setState({
-                    maxX: Number.parseFloat(event.target.value),
-                  });
-                }}
+                onChange={event => this.setState({
+                  maxX: Number.parseFloat(event.target.value),
+                })
+                }
               />
             </Field>
             <Field>
-              min Y:{' '}
+              min Y:
+              {' '}
               <Input
                 value={minY}
                 type="number"
-                onChange={event => {
-                  this.setState({
-                    minY: Number.parseFloat(event.target.value),
-                  });
-                }}
+                onChange={event => this.setState({
+                  minY: Number.parseFloat(event.target.value),
+                })
+                }
               />
             </Field>
             <Field>
-              max Y:{' '}
+              max Y:
+              {' '}
               <Input
                 value={maxY}
                 type="number"
-                onChange={event => {
-                  this.setState({
-                    maxY: Number.parseFloat(event.target.value),
-                  });
-                }}
+                onChange={event => this.setState({
+                  maxY: Number.parseFloat(event.target.value),
+                })
+                }
               />
             </Field>
             <div style={{ textAlign: 'center', margin: '20px' }}>
@@ -146,6 +140,7 @@ class App extends React.Component {
                     x: Math.round(Math.random() * (maxX - minX) + minX),
                     y: Math.round(Math.random() * (maxY - minY) + minY),
                     type: Math.floor(Math.random() * 4),
+                    color: colors[Math.floor(Math.random() * 4)],
                   }));
                   this.setState({ data: randomData });
                 }}
@@ -168,7 +163,6 @@ class App extends React.Component {
               xSteps={5}
               ySteps={5}
               data={data}
-              key={key}
               onSelect={this.onSelect}
             />
           </div>
@@ -179,14 +173,19 @@ class App extends React.Component {
             }}
           >
             <div>Selected Points:</div>
-            {selectedKeys &&
-              data
+            {selectedKeys
+              && data
                 .filter(value => selectedKeys.indexOf(value.key) !== -1)
-                .map(value => {
+                .map((value) => {
                   const { x, y, key } = value;
                   return (
                     <div key={key}>
-                      x: {x}; y: {y}; key: {key}
+                      x:
+                      {x}
+                      ; y:
+                      {y}
+                      ; key:
+                      {key}
                     </div>
                   );
                 })}
@@ -202,25 +201,36 @@ class App extends React.Component {
           <div>Data points:</div>
           {data.map(dataPoint => (
             <div style={{ margin: '5px' }}>
-              x:{' '}
+              x:
+              {' '}
               <Input
                 value={dataPoint.x}
                 type="number"
-                onChange={event => {
+                onChange={(event) => {
                   data[dataPoint.key].x = Number.parseFloat(event.target.value);
                   this.setState({ data });
                 }}
-              />{' '}
-              &nbsp; y:{' '}
+              />
+              {' '}
+              &nbsp; y:
+              {' '}
               <Input
                 value={dataPoint.y}
                 type="number"
-                onChange={event => {
+                onChange={(event) => {
                   data[dataPoint.key].y = Number.parseFloat(event.target.value);
                   this.setState({ data });
                 }}
-              />{' '}
-              &nbsp; key: {dataPoint.key}
+              />
+              {' '}
+              &nbsp; key:
+              {dataPoint.key}
+              ,&nbsp;
+              color:
+              <span style={{
+                marginLeft: '5px', width: '10px', height: '10px', display: 'inline-block', backgroundColor: dataPoint.color,
+              }}
+              />
             </div>
           ))}
         </div>

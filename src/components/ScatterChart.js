@@ -28,13 +28,6 @@ const YAxisDiv = styled.div`
   height: 100%;
 `;
 
-const XAxisDiv = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-`;
-
 function convertX(x, minX, maxX, viewBoxMaxX) {
   return ((x - minX) / (maxX - minX)) * viewBoxMaxX;
 }
@@ -59,8 +52,10 @@ function convertType(type) {
   return null;
 }
 
-function DataPoint({ type, x, y, color, onClick }) {
-  const size = 1.5;
+function DataPoint({
+  type, x, y, color, onClick,
+}) {
+  const size = 2;
   if (type === DATA_POINT_TYPE_CIRCLE) {
     return (
       <circle
@@ -70,6 +65,7 @@ function DataPoint({ type, x, y, color, onClick }) {
         r={size}
         fill={color}
         onClick={onClick}
+        style={{ filter: 'url(#shadow)' }}
       />
     );
   }
@@ -77,10 +73,11 @@ function DataPoint({ type, x, y, color, onClick }) {
     return (
       <polygon
         draggable={false}
-        points={`${x - size} ${y - size}, ${x + size} ${y - size}, ${x +
-          size} ${y + size}, ${x - size} ${y + size}`}
+        points={`${x - size} ${y - size}, ${x + size} ${y - size}, ${x
+          + size} ${y + size}, ${x - size} ${y + size}`}
         fill={color}
         onClick={onClick}
+        style={{ filter: 'url(#shadow)' }}
       />
     );
   }
@@ -89,11 +86,10 @@ function DataPoint({ type, x, y, color, onClick }) {
     return (
       <polygon
         draggable={false}
-        points={`${x} ${y - triangleSize}, ${x + triangleSize * 0.866} ${y +
-          triangleSize * 0.5}, ${x - triangleSize * 0.866} ${y +
-          triangleSize * 0.5}`}
+        points={`${x} ${y - triangleSize}, ${x + triangleSize * 0.866} ${y + triangleSize * 0.5}, ${x - triangleSize * 0.866} ${y + triangleSize * 0.5}`}
         fill={color}
         onClick={onClick}
+        style={{ filter: 'url(#shadow)' }}
       />
     );
   }
@@ -101,11 +97,10 @@ function DataPoint({ type, x, y, color, onClick }) {
     return (
       <polygon
         draggable={false}
-        points={`${x} ${y - 2 * size * 0.707}, ${x +
-          2 * size * 0.707} ${y}, ${x} ${y + 2 * size * 0.707}, ${x -
-          2 * size * 0.707} ${y}`}
+        points={`${x} ${y - 2 * size * 0.707}, ${x + 2 * size * 0.707} ${y}, ${x} ${y + 2 * size * 0.707}, ${x - 2 * size * 0.707} ${y}`}
         fill={color}
         onClick={onClick}
+        style={{ filter: 'url(#shadow)' }}
       />
     );
   }
@@ -126,7 +121,9 @@ DataPoint.propTypes = {
 };
 
 function SelectionRectangle({ pos }) {
-  const { rectangleX1, rectangleX2, rectangleY1, rectangleY2 } = pos;
+  const {
+    rectangleX1, rectangleX2, rectangleY1, rectangleY2,
+  } = pos;
   if (!rectangleX1 || !rectangleX2 || !rectangleY1 || !rectangleY2) {
     return <div />;
   }
@@ -155,7 +152,7 @@ class ScatterChart extends React.PureComponent {
     super(props);
 
     this.svgContainer = React.createRef();
-    this.extra = 2;
+    this.extra = 4;
 
     this.state = {};
     this.mouseDown = this.mouseDown.bind(this);
@@ -167,7 +164,9 @@ class ScatterChart extends React.PureComponent {
 
   static getDerivedStateFromProps(props) {
     const { data, aspectRatio } = props;
-    const { minX, maxX, minY, maxY } = data.reduce(
+    const {
+      minX, maxX, minY, maxY,
+    } = data.reduce(
       (
         {
           minX: currentMinX,
@@ -209,9 +208,12 @@ class ScatterChart extends React.PureComponent {
       y: convertY(dataPoint.y, minY, maxY),
       key: dataPoint.key,
       type: dataPoint.type,
+      color: dataPoint.color,
     }));
 
-    return { minX, maxX, minY, maxY, convertData, viewBoxMaxX };
+    return {
+      minX, maxX, minY, maxY, convertData, viewBoxMaxX,
+    };
   }
 
   componentDidMount() {
@@ -249,7 +251,9 @@ class ScatterChart extends React.PureComponent {
   }
 
   mouseUp({ clientX, clientY }) {
-    const { rectangleX1, rectangleY1, convertData, viewBoxMaxX } = this.state;
+    const {
+      rectangleX1, rectangleY1, convertData, viewBoxMaxX,
+    } = this.state;
     const { onSelect } = this.props;
 
     const container = this.svgContainer.current.getBoundingClientRect();
@@ -262,29 +266,18 @@ class ScatterChart extends React.PureComponent {
         drawing: false,
       });
       if (onSelect) {
-        const lowerBoundX =
-          (Math.min(rectangleX1, rectangleX2) / container.width) *
-            (this.extra * 2 + viewBoxMaxX) -
-          this.extra;
-        const upperBoundX =
-          (Math.max(rectangleX1, rectangleX2) / container.width) *
-            (this.extra * 2 + viewBoxMaxX) -
-          this.extra;
-        const lowerBoundY =
-          (Math.min(rectangleY1, rectangleY2) / container.height) *
-            (this.extra * 2 + 100) -
-          this.extra;
-        const upperBoundY =
-          (Math.max(rectangleY1, rectangleY2) / container.height) *
-            (this.extra * 2 + 100) -
-          this.extra;
+        const lowerBoundX = (Math.min(rectangleX1, rectangleX2) / container.width)
+          * (this.extra * 2 + viewBoxMaxX) - this.extra;
+        const upperBoundX = (Math.max(rectangleX1, rectangleX2) / container.width)
+          * (this.extra * 2 + viewBoxMaxX) - this.extra;
+        const lowerBoundY = (Math.min(rectangleY1, rectangleY2) / container.height)
+          * (this.extra * 2 + 100) - this.extra;
+        const upperBoundY = (Math.max(rectangleY1, rectangleY2) / container.height)
+          * (this.extra * 2 + 100) - this.extra;
         const selectedKeys = convertData
           .filter(
-            dataPoint =>
-              lowerBoundX < dataPoint.x &&
-              dataPoint.x < upperBoundX &&
-              lowerBoundY < dataPoint.y &&
-              dataPoint.y < upperBoundY,
+            dataPoint => lowerBoundX < dataPoint.x && dataPoint.x < upperBoundX
+              && lowerBoundY < dataPoint.y && dataPoint.y < upperBoundY,
           )
           .map(dataPoint => dataPoint.key);
         onSelect(selectedKeys);
@@ -356,9 +349,13 @@ class ScatterChart extends React.PureComponent {
           >
             <svg
               draggable={false}
-              viewBox={`${0 - this.extra} ${0 - this.extra} ${viewBoxMaxX +
-                this.extra * 2} ${100 + this.extra * 2}`}
+              viewBox={`${0 - this.extra} ${0 - this.extra} ${viewBoxMaxX + this.extra * 2} ${100 + this.extra * 2}`}
             >
+              <defs>
+                <filter id="shadow" y="-40%" height="180%" x="-40%" width="180%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="0.5" />
+                </filter>
+              </defs>
               {[...Array(ySteps + 1).keys()].map(v => (
                 <line
                   key={v}
@@ -387,34 +384,40 @@ class ScatterChart extends React.PureComponent {
                   type={convertType(dataPoint.type)}
                   x={dataPoint.x}
                   y={dataPoint.y}
-                  onClick={() =>
-                    this.setState({
-                      x: this.props.data[dataPoint.key].x,
-                      y: this.props.data[dataPoint.key].y,
-                      cx: dataPoint.x,
-                      cy: dataPoint.y,
-                    })
-                  }
+                  color={dataPoint.color}
                 />
               ))}
             </svg>
             {
               <SelectionRectangle
-                pos={{ rectangleX1, rectangleX2, rectangleY1, rectangleY2 }}
+                pos={{
+                  rectangleX1, rectangleX2, rectangleY1, rectangleY2,
+                }}
               />
+            }
+            {
+              [...Array(xSteps + 1).keys()].map(v => (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: height,
+                    left: ((v * viewBoxMaxX) / xSteps + this.extra) / (this.extra * 2 + viewBoxMaxX)
+                      * height * aspectRatio,
+                    transform: 'translateX(-50%)',
+                  }}
+                  key={`${v}-label`}
+                >
+                  {minX + (v * (maxX - minX)) / xSteps}
+                </div>
+              ))
             }
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
           <div style={{ width: `${width}px` }}>
-            <XAxisDiv>
-              {[...Array(xSteps + 1).keys()].map(v => (
-                <div key={v}>{minX + (v * (maxX - minX)) / xSteps}</div>
-              ))}
-            </XAxisDiv>
             <div
               style={{
-                marginTop: '10px',
+                marginTop: '25px',
                 display: 'flex',
                 justifyContent: 'center',
               }}
@@ -423,16 +426,6 @@ class ScatterChart extends React.PureComponent {
             </div>
           </div>
         </div>
-        {/* <div>
-          <div>X :{this.state.x}</div>
-          <div>Y: {this.state.y}</div>
-          <div>converX :{this.state.cx}</div>
-          <div>convertY: {this.state.cy}</div>
-          <div>maxX :{maxX}</div>
-          <div>maxY: {maxY}</div>
-          <div>minX :{minX}</div>
-          <div>minY: {minY}</div>
-        </div> */}
       </Container>
     );
   }
@@ -455,7 +448,6 @@ ScatterChart.propTypes = {
   yLabel: PropTypes.string.isRequired,
   xSteps: PropTypes.number,
   ySteps: PropTypes.number,
-  data: PropTypes.arrayOf(PropTypes.object),
   onSelect: PropTypes.func,
 };
 
