@@ -342,6 +342,7 @@ class ScatterChart extends React.PureComponent {
           <div
             draggable={false}
             style={{
+              userSelect: 'none',
               height: `${height}px`,
               width: `${width}px`,
               position: 'relative',
@@ -359,6 +360,7 @@ class ScatterChart extends React.PureComponent {
               </defs>
               {[...Array(ySteps + 1).keys()].map(v => (
                 <line
+                  draggable={false}
                   key={v}
                   x1="0"
                   y1={(v * 100) / ySteps}
@@ -370,6 +372,7 @@ class ScatterChart extends React.PureComponent {
               ))}
               {[...Array(xSteps + 1).keys()].map(v => (
                 <line
+                  draggable={false}
                   key={v}
                   y1="0"
                   x1={(v * viewBoxMaxX) / xSteps}
