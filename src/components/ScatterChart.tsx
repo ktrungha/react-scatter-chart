@@ -143,21 +143,16 @@ interface SelectionRectangleProps {
 const SelectionRectangle: React.SFC<SelectionRectangleProps> = ({ pos }) => {
   const { rectangleX1, rectangleX2, rectangleY1, rectangleY2 } = pos;
   if (rectangleX1 === rectangleX2 && rectangleY1 === rectangleY2) {
-    return <div />;
+    return <rect />;
   }
   return (
-    <div
-      draggable={false}
-      style={{
-        userSelect: 'none',
-        position: 'absolute',
-        top: Math.min(rectangleY1, rectangleY2),
-        left: Math.min(rectangleX1, rectangleX2),
-        width: Math.abs(rectangleX1 - rectangleX2),
-        height: Math.abs(rectangleY1 - rectangleY2),
-        backgroundColor: 'grey',
-        opacity: 0.2,
-      }}
+    <rect
+      fill="#717272"
+      fillOpacity={0.3}
+      x={Math.min(rectangleX1, rectangleX2)}
+      y={Math.min(rectangleY1, rectangleY2)}
+      width={Math.abs(rectangleX2 - rectangleX1)}
+      height={Math.abs(rectangleY1 - rectangleY2)}
     />
   );
 };
@@ -479,28 +474,33 @@ class ScatterChart extends React.PureComponent<
                   />
                 );
               })}
-            </svg>
-            {
               <SelectionRectangle
                 pos={{
-                  rectangleX1,
-                  rectangleX2,
-                  rectangleY1,
-                  rectangleY2,
+                  rectangleX1:
+                    (rectangleX1 / width) * (this.extra * 2 + viewBoxMaxX) -
+                    this.extra,
+                  rectangleX2:
+                    (rectangleX2 / width) * (this.extra * 2 + viewBoxMaxX) -
+                    this.extra,
+                  rectangleY1:
+                    (rectangleY1 / height) * (this.extra * 2 + 100) -
+                    this.extra,
+                  rectangleY2:
+                    (rectangleY2 / height) * (this.extra * 2 + 100) -
+                    this.extra,
                 }}
               />
-            }
+            </svg>
             {range(xSteps + 1).map((v) => {
               return (
                 <div
                   style={{
                     position: 'absolute',
-                    top: height,
-                    left:
-                      (((v * viewBoxMaxX) / xSteps + this.extra) /
-                        (this.extra * 2 + viewBoxMaxX)) *
+                    top: `${height + 10}px`,
+                    left: `${(((v * viewBoxMaxX) / xSteps + this.extra) /
+                      (this.extra * 2 + viewBoxMaxX)) *
                       height *
-                      aspectRatio,
+                      aspectRatio}px`,
                     transform: 'translateX(-50%)',
                   }}
                   key={`${v}-label`}
@@ -515,7 +515,7 @@ class ScatterChart extends React.PureComponent<
           <div style={{ width: `${width}px` }}>
             <div
               style={{
-                marginTop: '25px',
+                marginTop: '35px',
                 display: 'flex',
                 justifyContent: 'center',
               }}
