@@ -167,8 +167,8 @@ class App extends React.Component<{}, State> {
               title="Chart title"
               xLabel="X"
               yLabel="Y"
-              height={400}
-              aspectRatio={1}
+              width={800}
+              aspectRatio={4}
               xSteps={5}
               ySteps={5}
               data={data}

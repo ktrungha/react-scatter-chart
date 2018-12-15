@@ -15,9 +15,6 @@ const Container = styled.div`
 const YLabelDiv = styled.div`
   display: flex;
   align-items: center;
-  height: ${(props: { height: number }) => {
-    return `${props.height}px`;
-  }};
 `;
 
 const YAxisDiv = styled.div`
@@ -381,12 +378,11 @@ class ScatterChart extends React.PureComponent<
       xLabel,
       yLabel,
       aspectRatio,
-      height,
+      width,
       title,
       xSteps,
       ySteps,
     } = this.props;
-    const width = height * aspectRatio;
 
     const {
       rectangleX1,
@@ -401,13 +397,17 @@ class ScatterChart extends React.PureComponent<
       convertData,
     } = this.state;
 
+    const height = this.svgContainer.current
+      ? this.svgContainer.current.getBoundingClientRect().height
+      : 0;
+
     return (
       <Container>
         <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
           <div
             style={{
-              width: `${width}px`,
               display: 'flex',
+              flex: 1,
               justifyContent: 'center',
             }}
           >
@@ -415,8 +415,8 @@ class ScatterChart extends React.PureComponent<
           </div>
         </div>
         <div style={{ display: 'flex' }}>
-          <YLabelDiv height={height}>
-            <div style={{ marginRight: '10px' }}>{yLabel}</div>
+          <YLabelDiv>
+            <div style={{ marginRight: '15px' }}>{yLabel}</div>
             <YAxisDiv>
               {range(ySteps + 1).map((v) => {
                 return <div key={v}>{minY + (v * (maxY - minY)) / ySteps}</div>;
@@ -427,13 +427,13 @@ class ScatterChart extends React.PureComponent<
             draggable={false}
             style={{
               userSelect: 'none',
-              height: `${height}px`,
               width: `${width}px`,
               position: 'relative',
             }}
             ref={this.svgContainer}
           >
             <svg
+              style={{ width: '100%', display: 'block' }}
               viewBox={`${0 - this.extra} ${0 - this.extra} ${viewBoxMaxX +
                 this.extra * 2} ${100 + this.extra * 2}`}
             >
@@ -496,11 +496,10 @@ class ScatterChart extends React.PureComponent<
                 <div
                   style={{
                     position: 'absolute',
-                    top: `${height + 10}px`,
+                    bottom: `${-20}px`,
                     left: `${(((v * viewBoxMaxX) / xSteps + this.extra) /
                       (this.extra * 2 + viewBoxMaxX)) *
-                      height *
-                      aspectRatio}px`,
+                      width}px`,
                     transform: 'translateX(-50%)',
                   }}
                   key={`${v}-label`}
@@ -545,7 +544,7 @@ interface ScatterChartState {
 
 interface ScatterChartProps {
   aspectRatio: number;
-  height: number;
+  width: number;
   title: string;
   xLabel: string;
   yLabel: string;
