@@ -514,7 +514,7 @@ class ScatterChart extends React.PureComponent<
           <div style={{ width: `${width}px` }}>
             <div
               style={{
-                marginTop: '35px',
+                marginTop: '20px',
                 display: 'flex',
                 justifyContent: 'center',
               }}
